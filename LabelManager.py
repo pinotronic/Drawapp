@@ -15,6 +15,8 @@ class LabelManager:
         self.canvas.tag_bind("legend_label", "<Button-1>", self.on_label_click)
         self.canvas.tag_bind("legend_label", "<B1-Motion>", self.on_label_drag)
         self.canvas.tag_bind("legend_label", "<ButtonRelease-1>", self.on_label_release)
+        #self.canvas.tag_bind("legend_label", "<Button-3>", lambda event: self.edit_legend_label(event, label))
+        self.canvas.tag_bind("legend_label", "<Double-Button-1>", self.edit_legend_label)
 
     def add_legend_label(self, text, x, y):
         label_id = self.canvas.create_text(x, y, text=text, anchor="nw", font=("Arial", 12), tags="legend_label")
@@ -35,14 +37,15 @@ class LabelManager:
                 if coords == self.canvas.coords(label):
                     self.legend_labels[i] = (text, (x, y))
                     break
-    def edit_legend_label(self, event, label):
+    def edit_legend_label(self, event):
+        label_id = self.canvas.find_closest(event.x, event.y)[0]
         new_text = askstring("Editar Leyenda", "Introduce el nuevo texto para la leyenda:")
         if new_text:
-            self.canvas.itemconfig(label, text=new_text)
+            self.canvas.itemconfig(label_id, text=new_text)
             # Actualiza el texto en legend_labels
-            for i, (text, coords) in enumerate(self.legend_labels):
-                if coords == self.canvas.coords(label):
-                    self.legend_labels[i] = (new_text, coords)
+            for label in self.legend_labels:
+                if label["id"] == label_id:
+                    label["text"] = new_text
                     break
 
     def increase_font_size(self):
@@ -97,14 +100,12 @@ class LabelManager:
         self.drag_data["x"] = event.x
         self.drag_data["y"] = event.y
         self.dragging = False  # Reset dragging flag
-
     def rotate_selected_label(self):
         if self.selected_label_id:
             current_angle = self.label_rotation.get(self.selected_label_id, 0)
             new_angle = (current_angle + 15) % 360
             self.label_rotation[self.selected_label_id] = new_angle
             self.canvas.itemconfig(self.selected_label_id, angle=new_angle) 
-     
     def on_label_release(self, event):
         if not self.dragging:  # If not dragging, consider it a click for rotation
             self.rotate_selected_label()

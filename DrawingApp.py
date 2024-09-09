@@ -26,7 +26,6 @@ class DrawingApp:
 
         self.setup_ui()
         #self.root.bind("<Button-1>", self.test_event_capture)
-
     def test_event_capture(self, event):
         print(f"Root capturó clic en: ({event.x}, {event.y})")
     def setup_ui(self):
@@ -34,13 +33,9 @@ class DrawingApp:
         toolbar.pack(side=tk.TOP, fill=tk.X)
 
         # Caja de texto para la longitud de la línea
-        self.length_var = tk.DoubleVar()
+        self.length_var = tk.DoubleVar(value=1.0)
         length_entry = tk.Entry(toolbar, textvariable=self.length_var)
         length_entry.pack(side=tk.LEFT)
-
-        # Caja de texto para leyenda adicional
-        self.legend_entry = tk.Entry(toolbar)  # Ahora se incluye en el toolbar
-        self.legend_entry.pack(side=tk.LEFT)
 
         # Botón para dibujar la línea
         draw_button = tk.Button(toolbar, text="Dibujar Línea", command=self.execute_draw_line)
@@ -53,11 +48,13 @@ class DrawingApp:
         # Botón para limpiar el canvas
         clear_button = tk.Button(toolbar, text="Limpiar", command=self.execute_clear_canvas)
         clear_button.pack(side=tk.LEFT)
+        # Botón para activar/desactivar modo de movimiento fijo
+        self.fixed_movement_button = tk.Button(toolbar, text="Fijo", command=self.toggle_fixed_movement_mode)
+        self.fixed_movement_button.pack(side=tk.LEFT)
 
-        # Botón para exportar a SVG
-        export_button = tk.Button(toolbar, text="SVG", command=self.execute_export_to_svg)
-        export_button.pack(side=tk.LEFT)
-
+        # Caja de texto para leyenda adicional
+        self.legend_entry = tk.Entry(toolbar)  # Ahora se incluye en el toolbar
+        self.legend_entry.pack(side=tk.LEFT)
         # Botón para agregar la etiqueta adicional
         add_legend_button = tk.Button(toolbar, text="Agregar Eti", command=self.add_legend_label)
         add_legend_button.pack(side=tk.LEFT)
@@ -73,19 +70,24 @@ class DrawingApp:
         # Botón para disminuir el tamaño de la fuente de la etiqueta seleccionada
         decrease_font_button = tk.Button(toolbar, text="Disminuir F", command=self.decrease_font_size)
         decrease_font_button.pack(side=tk.LEFT)
+        # Botón para exportar a SVG
+        export_button = tk.Button(toolbar, text="SVG", command=self.execute_export_to_svg)
+        export_button.pack(side=tk.LEFT)
 
-        # Botón para activar/desactivar modo de movimiento fijo
-        self.fixed_movement_button = tk.Button(toolbar, text="Fijo", command=self.toggle_fixed_movement_mode)
-        self.fixed_movement_button.pack(side=tk.LEFT)
 
         self.label_manager = LabelManager(self.canvas)
-
     def set_start_point(self):
         self.start_point = None
         self.canvas.bind("<Button-1>", self.on_canvas_click)
     def toggle_fixed_movement_mode(self):
         self.drawing_canvas.fixed_movement_mode = not self.drawing_canvas.fixed_movement_mode
         print(f"Modo de movimiento fijo {'activado' if self.drawing_canvas.fixed_movement_mode else 'desactivado'}")
+        if self.drawing_canvas.fixed_movement_mode:
+            self.fixed_movement_button.config(bg="green", text="Movimiento Fijo Activado")
+            print("Modo de movimiento fijo activado.")
+        else:
+            self.fixed_movement_button.config(bg="SystemButtonFace", text="Activar Movimiento Fijo")
+            print("Modo de movimiento fijo desactivado.")
     def enable_add_label_mode(self):
         # Activar el modo de agregar etiqueta
         self.adding_label_mode = True

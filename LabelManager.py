@@ -1,4 +1,5 @@
 from tkinter.simpledialog import askstring
+
 class LabelManager:
     def __init__(self, canvas):
         self.canvas = canvas
@@ -96,17 +97,14 @@ class LabelManager:
         self.drag_data["x"] = event.x
         self.drag_data["y"] = event.y
         self.dragging = False  # Reset dragging flag
+
     def rotate_selected_label(self):
         if self.selected_label_id:
-            for label in self.labels:
-                if label["id"] == self.selected_label_id:
-                    # Asegúrate de que 'angle' existe y está inicializado
-                    label["angle"] = label.get("angle", 0) + 45
-                    if label["angle"] >= 360:
-                        label["angle"] = 0
-                    # Intento de rotación usando el ángulo (no soportado directamente en tkinter)
-                    print(f"Rotating to angle: {label['angle']} (Note: tkinter does not support text rotation natively)")
-                    break    
+            current_angle = self.label_rotation.get(self.selected_label_id, 0)
+            new_angle = (current_angle + 15) % 360
+            self.label_rotation[self.selected_label_id] = new_angle
+            self.canvas.itemconfig(self.selected_label_id, angle=new_angle) 
+     
     def on_label_release(self, event):
         if not self.dragging:  # If not dragging, consider it a click for rotation
             self.rotate_selected_label()

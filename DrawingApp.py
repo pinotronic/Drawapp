@@ -17,8 +17,8 @@ class DrawingApp:
         self.start_point = None
         self.drawing_canvas = DrawingCanvas(self.canvas)
         self.label_manager = LabelManager(self.canvas)
-        self.legend_entry = tk.Entry(root)
-        self.legend_entry.pack()
+        #self.legend_entry = tk.Entry(root)
+        #self.legend_entry.pack()
         self.file_exporter = FileExporter(self.canvas)
 
         self.current_y_offset = 0
@@ -37,6 +37,10 @@ class DrawingApp:
         self.length_var = tk.DoubleVar()
         length_entry = tk.Entry(toolbar, textvariable=self.length_var)
         length_entry.pack(side=tk.LEFT)
+
+        # Caja de texto para leyenda adicional
+        self.legend_entry = tk.Entry(toolbar)  # Ahora se incluye en el toolbar
+        self.legend_entry.pack(side=tk.LEFT)
 
         # Botón para dibujar la línea
         draw_button = tk.Button(toolbar, text="Dibujar Línea", command=self.execute_draw_line)
@@ -69,9 +73,11 @@ class DrawingApp:
         # Botón para disminuir el tamaño de la fuente de la etiqueta seleccionada
         decrease_font_button = tk.Button(toolbar, text="Disminuir F", command=self.decrease_font_size)
         decrease_font_button.pack(side=tk.LEFT)
+
         # Botón para activar/desactivar modo de movimiento fijo
         self.fixed_movement_button = tk.Button(toolbar, text="Fijo", command=self.toggle_fixed_movement_mode)
         self.fixed_movement_button.pack(side=tk.LEFT)
+
         self.label_manager = LabelManager(self.canvas)
 
     def set_start_point(self):
